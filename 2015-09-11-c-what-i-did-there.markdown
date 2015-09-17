@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "C What I Did There"
-date:   2015-09-16 19:56:24
+date:   2015-09-11 13:56:24
 ---
 > ### DN: List java primitive variable types:
 >
