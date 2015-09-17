@@ -57,5 +57,5 @@ We compile with `gcc`
 
 ```sh
 gcc minimal.c           # produces a.out
-gcc minmal.c -o minimal # produces minimal
+gcc minimal.c -o minimal # produces minimal
 ```
