@@ -1,15 +1,15 @@
 ---
 layout: post
-title:  "Variables are the spice of life"
+title:  "Variables Are the Spice of Life"
 date:   2015-09-16 19:56:24
 ---
 
-## DN: What is the smallest variable type that could be used to store the following values
-
-1. 5             => byte
-2. -30,000       => short
-3. 255           => short (or unsigned byte)
-4. 5,000,000,000 => long :'(
+> ### DN: What is the smallest variable type that could be used to store the following values
+>
+> 1. 5             => byte
+> 2. -30,000       => short
+> 3. 255           => short (or unsigned byte)
+> 4. 5,000,000,000 => long :'(
 
 ## Numeric types
 
@@ -31,7 +31,7 @@ char    | 1
 
 ## Booleans
 0             => false
-anything else =>
+anything else => true
 
 ```c
 // wrong!
