@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "How To Write Functioning Code"
-date:   2015-09-30 13:56:24
+date:   2015-09-30
 ---
 > ### DN: Write a program the finds the length of a string
 >
@@ -85,7 +85,7 @@ similarly, if we modify the value of `s`, that is the memory location at which i
 1. Define the function before you use it.
 2. Declare the header before you use it.
 3. Create a seperate header file and include it.
-   
+
    ```c
    //stringy.h
 
@@ -93,7 +93,18 @@ similarly, if we modify the value of `s`, that is the memory location at which i
    ```
 
    ```c
-   //stringy.c, or compiled stringy binary
+   //stringy.c
+   #import <stdio.h>
+   #import "stringy.h"
+
+   int main() {
+       char *s = "This is my string!";
+       int l = len(s);
+       printf("length of *%s*: %d\n", s, l);
+
+       return 0;
+   }
+
    int len(char *s) {
        int i = 0;
        while (s[i] != 0) { // or s[i] because 0 is false
@@ -103,27 +114,20 @@ similarly, if we modify the value of `s`, that is the memory location at which i
    }
    ```
 
-   ```c
-   //other_file.c
-   #import <stdio.h>
-   #import "stringy.h"
-
-   int main() {
-       char *s = "This is my string!";
-       int l = len(s);
-       printf("length of *%s*: %d\n", s, l);
-   
-       return 0;
-   }
-   ```
-
 # standard Library String Functions
 stored in `string.h`.
 all functions rely on _null-terminated strings_.
 
-- `strlen`
-- `srtcmp`
-- `strcopy`
-- `strcat`
+`strlen`
+: computes the length of a string 
+
+`srtcmp`
+: compares two strings alphabetically and sequentially, returning a value less than 0 if the first is less than the second, 0 if they are equal and a value greater than 0 if the first is greater than the second
+
+`strcpy`
+: takes two pointers and copies the string from the first pointer to the second, replacing what's there
+
+`strcat`
+: takes two pointers and copies the string from the first pointer to the end of the second pointer
 
 Many have `strn*` version that take an extra parameter that sets a limit to the number of bytes it will look at it in string
