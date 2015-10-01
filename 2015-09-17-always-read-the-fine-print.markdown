@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Always Read the Fine Print"
-date:   2015-09-17 13:27:00
+date:   2015-09-17
 ---
 > ### DN: Write a basic "Hello World" program in Java
 >

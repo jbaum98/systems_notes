@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Variables Are the Spice of Life"
-date:   2015-09-16 19:56:24
+date:   2015-09-16
 ---
 
 > ### DN: What is the smallest variable type that could be used to store the following values

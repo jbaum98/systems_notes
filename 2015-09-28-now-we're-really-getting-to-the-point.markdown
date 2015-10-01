@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Ok, Now We're Really Getting to the Point"
-date:   2015-09-28 13:56:24
+date:   2015-09-28
 ---
 # What is a pointer?
 Pointers are variables that store a memory address which refers to the location of some other value. They are declared like this:

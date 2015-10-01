@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "What's the Point"
-date:   2015-09-22 19:56:24
+date:   2015-09-22
 ---
 
 # Memory Management

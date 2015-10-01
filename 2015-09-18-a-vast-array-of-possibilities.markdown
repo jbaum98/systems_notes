@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "A Vast Array of Possibilites"
-date: 2015-09-18 13:31:00
+date: 2015-09-18
 ---
 > ### DN: How do we declare arrays in Java
 >
