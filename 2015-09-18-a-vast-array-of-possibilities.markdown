@@ -2,7 +2,6 @@
 layout: post
 title: "A Vast Array of Possibilites"
 date: 2015-09-18 13:31:00
-sotd: Superstition - Stevie Wonder
 ---
 > ### DN: How do we declare arrays in Java
 >
