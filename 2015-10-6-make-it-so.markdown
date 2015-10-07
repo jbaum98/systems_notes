@@ -20,3 +20,68 @@ However, array notation results in a new allocation
 char s3[] = "Hello"; // allocates new memory
 assert( s3 != s1 );
 ```
+
+# Problem Including Your Libs
+
+```c
+//<stringy.c>
+
+int my_strlen(char *s) { /* ... */ }
+```
+
+```c
+//<stringy.h>
+
+int my_strlen(char *s);
+```
+
+```c
+//<main.c>
+
+#include "stringy.h"
+
+main() {
+    my_strlen("hey");
+}
+```
+
+```sh
+gcc main.c           # error: can't find my_strlen
+gcc stringy.c main.c # :) as long as stringy.c has no main
+gcc stringy.c        # error: no main #!@& the linker
+```
+
+You need to compile them at the same time.
+
+_But_ if your library contains a `main` and your program contains a `main` it will give an error.
+
+_But also_ if you ever want to recompile your lib it won't work because it has no `main`. ¯\\\_(ツ)\_/¯
+
+## Recompiling Without a `main`
+
+```sh
+gcc -c stringy.c # only compile, creating stringy.o
+```
+
+### The `.o` file
+
+It's a binary file containing the bytecode for the file, but it isn't an executable. Best of all, we don't need a `main`.
+
+We can use it to compile other files
+
+```sh
+gcc main.c stringy.o
+```
+
+## Makefiles
+
+```make
+main: stringy.o main.o
+    gcc stringy.o main.o
+
+stringy.o: stringy.c stringy.h
+    gcc -c stringy.c
+
+main.o
+    gcc -c main.c
+```
