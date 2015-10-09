@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Make It So"
-date: 2015-10-16
+date: 2015-10-06
 ---
 # Problems Declaring Strings
 
@@ -30,7 +30,7 @@ int my_strlen(char *s) { /* ... */ }
 ```
 
 ```c
-//<stringy.h>
+// stringy.h 
 
 int my_strlen(char *s);
 ```
