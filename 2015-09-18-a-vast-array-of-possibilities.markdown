@@ -26,15 +26,15 @@ printf("bob = %d\n", bob);
 ```
 > ### Formatting Characters
 >
-Type | Formatting Character
-int | `d`
-long | `ld`
-float | `f`
-double | `lf`
+Type               | Formatting Character
+int                | `d`
+long               | `ld`
+float              | `f`
+double             | `lf`
 specify `n` digits | `0.<n>f`
-char | `c`
-char array | `s`
-pointer | `p`
-binary | `b`
-hex | `h`
-octal | o
+char               | `c`
+char array         | `s`
+pointer            | `p`
+binary             | `b`
+hex                | `h`
+octal              | o

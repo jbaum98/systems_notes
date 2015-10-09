@@ -24,7 +24,7 @@ assert( s3 != s1 );
 # Problem Including Your Libs
 
 ```c
-//<stringy.c>
+// stringy.c
 
 int my_strlen(char *s) { /* ... */ }
 ```
@@ -36,7 +36,7 @@ int my_strlen(char *s);
 ```
 
 ```c
-//<main.c>
+// main.c
 
 #include "stringy.h"
 
@@ -46,9 +46,9 @@ main() {
 ```
 
 ```sh
-gcc main.c           # error: can't find my_strlen
-gcc stringy.c main.c # :) as long as stringy.c has no main
-gcc stringy.c        # error: no main #!@& the linker
+gcc main.c           -o main # error: can't find my_strlen
+gcc stringy.c main.c -o main # :) as long as stringy.c has no main
+gcc stringy.c                # error: no main #!@& the linker
 ```
 
 You need to compile them at the same time.
@@ -70,18 +70,18 @@ It's a binary file containing the bytecode for the file, but it isn't an executa
 We can use it to compile other files
 
 ```sh
-gcc main.c stringy.o
+gcc main.c stringy.o -o main
 ```
 
 ## Makefiles
 
 ```make
 main: stringy.o main.o
-    gcc stringy.o main.o
+    gcc stringy.o main.o -o main
 
 stringy.o: stringy.c stringy.h
     gcc -c stringy.c
 
-main.o
+main.o:
     gcc -c main.c
 ```
