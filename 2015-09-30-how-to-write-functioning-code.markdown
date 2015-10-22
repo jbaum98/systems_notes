@@ -110,13 +110,13 @@ because they point to the same memory location.
 3. Create a seperate header file and include it.
 
    ```c
-   // stringy.h
+   // ~stringy.h~
 
    int len(char *s);
    ```
 
    ```c
-   // stringy.c
+   // ~stringy.c~
 
    #import <stdio.h>
    #import "stringy.h"

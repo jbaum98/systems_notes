@@ -7,7 +7,7 @@ date: 2015-10-09
 # Typedef
 
 ```c
-// ~ typedef <real type> <new name>;
+// typedef <real type> <new name>;
 typdef float bubbles;
 
 bubbles b = 12.34;

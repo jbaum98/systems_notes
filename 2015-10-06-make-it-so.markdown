@@ -24,19 +24,19 @@ assert( s3 != s1 );
 # Problem Including Your Libs
 
 ```c
-// stringy.c
+// ~stringy.c~
 
 int my_strlen(char *s) { /* ... */ }
 ```
 
 ```c
-// stringy.h 
+// ~stringy.h~
 
 int my_strlen(char *s);
 ```
 
 ```c
-// main.c
+// ~main.c~
 
 #include "stringy.h"
 
@@ -76,12 +76,13 @@ gcc main.c stringy.o -o main
 ## Makefiles
 
 ```make
+# ~Makefile~ 
 main: stringy.o main.o
-    gcc stringy.o main.o -o main
+	gcc stringy.o main.o -o main
 
 stringy.o: stringy.c stringy.h
-    gcc -c stringy.c
+	gcc -c stringy.c
 
 main.o:
-    gcc -c main.c
+	gcc -c main.c
 ```
