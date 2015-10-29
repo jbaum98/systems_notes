@@ -31,3 +31,42 @@ stat struct field  | meaning
 `st_mode`          | file permissions
 `st_atime`         | last access
 `st_mtime`         | last modification
+
+## Time
+You can use `time` to get the number of seconds since
+some random date.
+
+`ctime` will format the output of `time` to a string.
+
+# Directories
+
+A \*nix directory is a file containing the names of the flies within
+the directory along with the basic information like file type
+
+Moving files into/out of a directory means chagning the directory file,
+not actually moving any data.
+
+## Opening Directories
+`opendir` in `dirent.h` allows you to read directories,
+but doesn't change the current working directory.
+
+```c
+DIR * opendir( char *path );
+```
+
+Close it with `closedir( DIR* )`, freeing the memory from `opendir`.
+
+### Reading Directories
+
+`readdir` returns a pointer to the next entry in a directory stream,
+or `0` if they have all already been returned.
+
+```c
+dirent * readdir( DIR* );
+```
+
+`dirent` conatins `d_name` and `d_type`.
+
+```c
+void rewinddir( DIR* );
+```
