@@ -1,0 +1,33 @@
+---
+layout: post
+title: "Stat"
+date: 2015-10-28
+---
+
+# Metadata
+metadata is data about the data
+
+- accessed date
+- size
+
+You can access it using `stat` in `sys/stat.h`
+
+```c
+stat(char *path,  struct stat *stat_buffer);
+```
+
+```c
+struct stat stat_buf;
+stat("foo", &sb);
+```
+
+## Stat Buffer
+
+stat struct field  | meaning
+-------------------|-----------
+`st_size`          | file size in bytes
+`st_uid`           | user id
+`st_gid`           | group id
+`st_mode`          | file permissions
+`st_atime`         | last access
+`st_mtime`         | last modification
