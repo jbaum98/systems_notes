@@ -62,7 +62,7 @@ Close it with `closedir( DIR* )`, freeing the memory from `opendir`.
 or `0` if they have all already been returned.
 
 ```c
-dirent * readdir( DIR* );
+struct dirent * readdir( DIR* );
 ```
 
 `dirent` conatins `d_name` and `d_type`.
