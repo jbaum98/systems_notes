@@ -1,0 +1,788 @@
+#+TITLE: Systems Notes
+
+* Class Stuff
+** Last Class Today
+Every day, 1 student will be chosen at random to provide a recap of the previous day’s class.
+That evening, the same person will be responsible for posting the notes to the class piazza page. Make sure to tag the note as “last class today”.
+Post as a note
+Post to only this class group period 8
+Title the note LCT `<MM/DD WEEKDAY>`
+For example: `LCT 9/10 Thursday`
+Also include at the end of the note a link to an interesting piece of tech/science news.
+
+* C
+** Types
+*** Numbers in Java
+| type  | bits | min    | max     |
+|-------+------+--------+---------|
+| byte  |    8 | $-128$ | $127$   |
+| short |   16 | $-2^{15}$ | $2^{15}-1$ |
+| int   |   32 | $-2^{31}$ | $2^{31}-1$ |
+| long  |   64 | $-2^{63}$ | $2^{63}-1$ |
+
+
+*** Numeric Types
+
+All C primitive types are numeric,
+differences are only floating vs. integer and size
+
+Size can be platform dependent
+~sizeof(<TYPE>)~ can be used to find size in bytes
+
+| Type   | Standard Size (bytes) |
+|--------+-----------------------|
+| int    |                     4 |
+| short  |                     2 |
+| long   |                     8 |
+| float  |                     4 |
+| double |                     8 |
+| char   |                     1 |
+
+*** Booleans
+0             => false
+anything else => true
+
+#+begin_src C
+// wrong!
+if ( x = 6 )  {...}
+// okay
+if ( x == 6 ) {...}
+// but be careful
+if ( 6 == x ) {...}
+#+end_src C
+
+
+*** Characters and Strings 
+Character literals are single characters inside ~''~
+#+begin_src C
+char x = 'a';
+#+end_src C
+
+String literals exists, even though there is no String data type.
+#+begin_src C
+char[] x = "hello";
+#+end_src C
+
+
+*** Unsigned Variables
+Any variable type can be declared an "unsigned" variables
+meaning that it will never be negative.
+It has 0 as its lower bound, and an upper bound greater than the signed version.
+#+begin_src C
+unsigned char x; // 0 <= x <= 255
+#+end_src C
+
+
+*** Loops
+> **WARNING**
+> You cannot declare a variable inside a ~for~ loop
+>
+#+begin_src C
+// NO GOOD MR JAVA
+for (int i = 0; i < 10; i++) {...}
+// INSTEAD
+int i;
+for (i = 0; i < 10; i++)     {...}
+#+end_src
+
+
+** Making C Programs
+*** Minimal C Program
+The ~main~ function is the one that runs. It's return type is ~int~, and therefore must return
+an ~int~ status code. 0 means everything is okay.
+
+#+begin_src C
+int main() {
+    return 0;
+}
+#+end_src
+
+We compile with `gcc`
+
+#+begin_src sh
+gcc minimal.c           # produces a.out
+gcc minimal.c -o minimal # produces minimal
+#+end_src
+
+*** Hello World in C
+#+begin_src C
+#include <stdio.h>
+int main() {
+    printf("Hi Everybody!\n");
+}
+
+return 0;
+#+end_src
+
+** Printing Strings
+
+#+begin_src C
+int bob = 1;
+printf("bob = %d\n", bob);
+#+end_src
+
+#+CAPTION: Formating Characters
+| Type               | Formatting Character |
+|--------------------+----------------------|
+| int                | `d`                  |
+| long               | `ld`                 |
+| float              | `f`                  |
+| double             | `lf`                 |
+| specify `n` digits | `0.<n>f`             |
+| char               | `c`                  |
+| char array         | `s`                  |
+| pointer            | `p`                  |
+| binary             | `b`                  |
+| hex                | `h`                  |
+| octal              | o                    |
+** Memory Management
+
+Memory allocation either happens at compile time or at run time (dynamic)
+
+*** Compiler Allocated Memory
+
+Packaged with the binary of the program
+
+There is no standard default value
+
+Variables and arrays are allocated here
+
+*** Arrays in C
+
+Arrays are not dynamic.
+Must have fixed size, so means you can't pass a variable into a an array initializer.
+There is no length function.
+There is no boundary checking>
+
+*** Pointers
+Pointers are variables that store a memory address which refers to the location of some other value. They are declared like this:
+
+#+begin_src C
+int *p;
+// also this is okay
+int * p;
+#+end_src
+
+**** Pointer Arithmetic
+As seen above, pointers are declared with a specific type in mind that will be stored at the memory location specified by the pointer. However, because all pointers contain memory addresses, they are all the same size, so the only real difference between two pointers of different types is when it comes to pointer arithmetic.
+
+#+begin_src C
+  int    * ip = 100; // an int pointer to memory location 100 which we probably don't have access to
+  double * dp = 100; // a double pointer to the same memory location
+
+  printf("ip + 1: %lu\n", ip + 1); //=> 104
+  printf("dp + 1: %lu\n", dp + 1); //=> 108
+#+end_src
+
+C adds the number of bytes necessary to store an entire value of the type of the pointer. So for an int it adds 4 bytes, but for a double it adds 8 bytes. If you don't care about the type of the pointer, use the void * type:
+
+#+begin_src C
+  void * p = 100;
+  printf("p + 1: %lu", p + 1); //=> 101
+#+end_src
+
+**** Operators Used With Pointers
+To access the memory location of a given variable, use the & operator. To access the value at a given memory location (dereference), use the * operator.
+
+#+begin_src C
+  int i = 100;
+  int * ip = &ip;                                                      // now ip contains the memory location of i
+  printf("i is located at: %lu\n", &i);                                // some memory address idk where
+  printf("the value of ip is: %lu\n", ip);                             // should be the same as above
+  printf("the value of i is: %d\n", i);                                //=> 100
+  printf("the value at the memory location stored in ip is: %d", *ip); //=> 100
+#+end_src
+
+*** Arrays
+What is an array, really? In C, it is simply a pointer to its first element.
+
+#+begin_src C
+  int ar[5];
+  printf("ar: %lu\n", ar);
+  printf("ar: %lu\n", &(ar[0])); // should be the same as previous line
+#+end_src
+
+This means that when you access the nth element of an array ar, you are really just dereferencing ar + n. Which also means that array notation is another way to specify dereferencing, but you should be sure to use the notation that makes sense for what you're doing. Which means never doing any of the following:
+#+begin_src C
+  5[ar] // same as ar[5]
+  ip[0] // same as *ip
+  0[ip] // same as *ip
+#+end_src
+
+> *Note:* The one difference between arrays and pointers is that arrays are immutable, so while you can change the value of pointer variables, you cannot change the values of arrays.
+
+*** Declaring Strings
+
+Because strings are arrays of ~char~s and arrays are pointers,
+strings are actually pointers to the first character and end at a ~null~.
+
+1. Declare  a normal ~char[]~ with size
+
+   #+begin_src C
+     char s[256];
+   #+end_src
+   Allocates 256 bytes, setting nothing automatically
+
+2. Declare ~char[]~ with size and a literal
+
+   #+begin_src C
+     char s[256] = "Imagine";
+   #+end_src
+   Allocates 256 bytes, setting the first 7 bytes to ~"Imagine"~
+   and the 8th byte to ~null~
+
+3. Declare ~char[]~ with a literal and no size
+
+   #+begin_src C
+     char s[] = "Tuesday";
+   #+end_src
+   Allocates 8 bytes (what it needs), setting the first 7 bytes to ~"Tuesday"~
+   and the 8th byte to ~null~
+
+4. Declare a ~*char~ with a literal
+
+   #+begin_src C
+     char *s = "Mankind"
+   #+end_src
+   Allocates 8 bytes (what it needs), setting the first 7 bytes to ~"Tuesday"~
+   and the 8th byte to ~null~.
+
+   > This is different from **#3** because a pointer is _mutable_
+   and an array is _immutable_
+
+
+**** Problems Declaring Strings
+
+**Literal strings are immutable.**
+
+```c
+char *s1  = "Hello";
+char *s2  = "Hello";
+assert( s1 == s2 ); // only allocates once
+*s2 = 'J'; // segfault
+```
+
+However, array notation results in a new allocation
+
+```c
+char s3[] = "Hello"; // allocates new memory
+assert( s3 != s1 );
+
+
+** Functions
+
+Functions are declared pretty much like Java.
+
+> **Functions cannot be used until they are declared.
+> You can declare a header at the top.**
+
+*** Function Headers
+
+#+begin_src C
+  int is_even(int i)
+  /*=== ======= =====
+    |     |      |
+    |      ----------------
+    |     ------------    |
+    -----             |   |
+         |            |   |
+     <return type> <name> (<parameters>) */
+#+end_src
+
+*** Passing Values
+
+All C functions are _pass by value_
+
+
+- pass by value :: a paramter is a copy of the variable passed into the function.
+                   The original variable is not touched
+
+     #+begin_src C
+       int foo(char *s, int i) {
+         i++;
+         s[0]++;
+       }
+       char * w = "cool";
+       int x = 5;
+       foo(w, x);
+     #+end_src
+
+If we mutate ~i~ within ~foo~, ~x~ is not mutated,
+because ~i~ is copy of ~x~, and is at a different memory location.
+Similarly, if we modify the value of ~s~, that is the memory location
+at which it points, ~w~ is unchanged. However, if we modify
+the **value at the memory location** that ~s~ refers to,
+then the value at which ~w~ points will also be modified
+because they point to the same memory location.
+
+> You cannot mutate the value of the variables you have passed in,
+> but you can mutate the value stored at memory locations whose pointers
+> are passed in.
+
+*** Calling Other Functions
+
+1. Define the function before you use it.
+2. Declare the header before you use it.
+3. Create a seperate header file and include it.
+
+   #+begin_src C
+     // ~stringy.h~
+
+     int len(char *s);
+   #+end_src
+
+     #+begin_src C
+       // ~stringy.c~
+
+       #import <stdio.h>
+       #import "stringy.h"
+
+       int main() {
+         char *s = "This is my string!";
+         int l = len(s);
+         printf("length of *%s*: %d\n", s, l);
+
+         return 0;
+       }
+
+       int len(char *s) {
+         int i = 0;
+         while (s[i] != 0) { // or s[i] because 0 is false
+           i++;
+         }
+         return i;
+       }
+     #+end_src
+*** Standard Library String Functions
+Many useful string functions are stored in ~string.h~. They all rely on the strings being _null-terminated_.
+
+All the functions assume that the parameter strings are always null-terminated.
+
+
+**** ~strlen~
+
+#+begin_src C
+  int strlen( char *s )
+#+end_src
+
+Returns the number of characters from the start of ~s~ up to but not including the terminating null
+
+**** ~strcmp~
+
+#+begin_src C
+  int strcmp( char *s1, char *s2 )
+#+end_src
+
+Returns 0 if ~s1~ and ~s2~ are identical up to the terminating null.
+Returns a positive number if ~s1~ is greater than ~s2~ (lexicographically)
+Returns a negative number if ~s1~ is less than ~s2~
+
+**** ~strcpy~
+
+#+begin_src C
+  char * strcpy( char *dest, char *source )
+#+end_src
+
+Copies all the chars up to and including the terminating null from ~source~ into ~dest~.
+Returns ~dest~
+
+**** ~strcat~
+
+#+begin_src C
+  char * strcat( char *s1, char *s2 )
+#+end_src
+
+Appends all the characters up to and including the terminating null in ~s2~ to the end of ~s1~.
+Returns ~s1~
+
+> **Many string functions have a ~strn~ version, these take an extra parameter
+> that sets a limit to the number of bytes you will look at in a string.**
+
+****# ~strncat~
+
+#+begin_src C
+  strncat( char *s1, char *s2, int n )
+#+end_src
+
+Appends at most n chars from ~s2~ into ~s1~.
+It will stop if it hits a terminating null in ~s2~ before ~n~ bytes
+It will add a terminating null to s1
+
+**** ~strchr~
+
+#+begin_src C
+  char * strchr( char *s, char c )
+#+end_src
+
+Returns a pointer to the first occurance of c in s.
+If c is not in s, returns null (0)
+
+**** ~strstr~
+
+#+begin_src C
+  char * strstr( char *s, char *key )
+#+end_src
+
+Returns a pointer to the start of the first occurance of key in s
+If key is not in s, returns null
+
+* Shared Memory
+** Generating Keys for IPC Functions
+We can use ~ftok~ to generate a randomish key useful for IPC functions:
+
+#+begin_src C
+  int ftok(char* path, int x);
+#+end_src
+
+/path/ is a path to a file whose metadata will be used as a source
+of data to generate the key. Must be accessible by program.
+
+/int/ acts as an additional seed.
+
+~ftok~ is a pure function, ie. given the same inputs it wil always return the
+same output.
+
+** Detach from Shared Memory Segment
+~shmdt~ detaches, but does not delete, a shared memory segment
+from a pointer.
+
+#+begin_src C
+  int shmdt(void * pointer);
+#+end_src
+
+Returns 0 if succesful, -1 if not.
+
+** Modifying/Removing Shared Memory
+
+~shmctl~ let's you perform operations on a segment of shared memory.
+
+Each segment has metadata stored in a struct (~struct shmid_ds~).
+Includes last access, size, pid of creator, pid of last modification.
+
+#+begin_src C
+  shmctl( int descriptor, int command, struct shmid_ds *buffer);
+#+end_src
+
+| command variable | what it does                                                     |
+|------------------+------------------------------------------------------------------|
+| ~IPC_STAT~       | populate the buffer with information                             |
+| ~IPC_SET~        | set som of the information for the segment to the info in buffer |
+| ~IPC_RMID~       | remove shared memory segment (~buffer~ can be NULL)              |
+* Semaphores
+
+- semphore :: IPC construct used to control acces to a shared resource
+     - It is a number that represents how many processes can access a resource at a given time.
+       - If a semaphore has a value of 3, then it can have 3 active "users".
+       - If it has a value of 0, it is unavailable.
+- atomic operation :: an operation that will not be split up by the processor,
+     is guaranteed to run without interpolation, interruption etc.
+     Most sempahore operations are atomic.
+
+
+** Semaphore Operations
+*** Creation
+~semget~ returns and maybe creates a semaphore,
+returning a semaphore descriptor on success,
+or -1 and setting ~errno~ on failure.
+
+#+begin_src C
+  int semget(int key, int amount, int flags);
+#+end_src
+
+- key :: as with shared memory, a unique identifier and
+     should be generate with ~ftok~
+- amount :: number of semaphores in the set.
+- flags :: includes permissions, combined with bitwise or
+     | flag        | behavior                             |
+     | ~IPC_CREAT~ | create semphore,                     |
+     |             | sets to 0                            |
+     | ~IPC_EXCL~  | Fail if the semaphore already exists |
+
+*** Setting an Initial Value
+You can use ~semctl~ to:
+
+- set the semaphore
+- remove the semaphore
+- get infromation about teh semaphore
+
+  #+begin_src C
+    int semctl(int descriptor, int index, int operation, union semun data);
+  #+end_src
+
+- descriptor :: the value returned by ~semget~
+- index :: the index of the semahpore you want to control
+- operation :: one of the following constants
+     | constant   | operation                                                |
+     | ~IPC_RMID~ | removes semaphore                                        |
+     | ~SETVAL~   | sets the value (requires ~data~ arg)                     |
+     | ~SETALL~   | set the value of every semahpore in set                  |
+     |            | (requires ~data~ arg)                                    |
+     | ~GETVAL~   | return the value                                         |
+     | ~IPC_STAT~ | Populate the buffer with information about the sempahore |
+     |            | (requires ~data~ arg as pointer to info struct)          |
+- data :: variable for setting/storing info
+     ~union semun~ must be defined by the calling program! (on Linux)
+
+#+begin_src C
+  union semun {
+    int val;
+    struct semid_ds *buf;
+    unsigned short *array;
+    struct seminfo *buf;
+  };
+#+end_src
+
+**** Union
+
+
+#+begin_src C
+  union north {
+    int i;    // 4 bytes
+    char c;   // 1 byte
+    double d; // 8 bytes
+  };
+
+  union north foo;
+  foo.i = 12;
+#+end_src
+
+If ~union north~ were a struct, it's size would be the sum of the sizes
+of it's fields, ie. 13 bytes.
+Instead, the size of ~union north~ is the largest of the sizes of its fields,
+because it contains only one of its fields at a time.
+  
+*** Up(S) / V(S)
+Release the semaphore to signal you are done with it's assosciated resource.
+
+#+begin_src python
+  s += 1
+#+end_src
+
+#+begin_src C
+  int semop(int descriptor, struct sembuf* operation, int amount);
+#+end_src
+
+The operation must be pacakged inside a ~struct sembuf~
+#+begin_src C
+  struct sembuf {
+    short sem_op;  // value by which to change the semaphore: 1 for up, -1 for down
+                   // 0 will block until semaphore reaches 0
+    short sem_num; // index of semahpore to work on
+    short sem_flg; // further options
+  }
+#+end_src
+
+| sem_op flag  | function                                               |
+| ~SEM_UNDO~   | allows the operation to undo the operation             |
+|              | if your program exits abnormally                       |
+| ~IPC_NOWAIT~ | instead of waiting for the semaphore, returns an error |
+
+**** Example
+#+begin_src C
+  int key = ftok("Makefile", 'a');
+  int semid = semget(key, 1, 0644);
+
+  struct sembuf sb = {
+    .sem_num = 0;
+    .sem_flg = SEMUNDO;
+    .sem_op = -1;
+  };
+
+  semop(semid, &sb, 1); // take the semaphore
+
+  int i = 10;
+  while ( i-- ) {
+    printf("I'm in!\n");
+    sleep(1);
+   }
+
+  sb.sem_op = 1; // let's release it
+  semop(semid, &sb, 1);
+#+end_src
+
+*** Down(S) / P(S)
+Attempt to take the semaphore.
+
+If the semaphore is 0, wait for it to be available.
+
+#+begin_src python
+  while S == 0:
+    block()
+    S -= 1
+#+end_src
+
+*** Removal
+*** An example
+#+begin_src C
+  int key = ftok("Makefile", 'a');
+  int semid;
+
+  if (strcmp(argv[1], "-c") == 0 ) {
+
+   } else if (strcmp(argv[1], "-v") == 0 ) {
+    semid = semget(key, 1, 0644);
+    int v = semctl(semid, 0, GETVAL);
+    printf("semaphore value: %d\n", v);
+   }
+#+end_src
+
+* Pipes
+
+- pipe :: a conduit between 2 separate processes
+
+
+
+Pipes have 2 ends, read and write
+
+Pipes are unidrectional (a pipe is either read or wirte only).
+
+Pipes act like file. (You can use ~read~ and ~write~).
+
+** Unnamed pipes
+
+Have no external identification, and can't be used between processes.
+
+#+begin_src C
+  #include <unistd.h>
+  int pipe(int descriptors[2]);
+#+end_src
+
+Returns 0 if created, -1 if not.
+
+Opens both ends of the pipe as files and populates ~descriptors~ with
+the file descriptors of both ends of the pipe
+
+*** Example
+
+#+begin_src C 
+  #include <stdio.h>
+
+  #define READ 0
+  #define WRITE 1
+
+  int fds[2];
+  char line[100];
+
+  pipe(fds);
+
+  printf("fds[0]: %d\nfds[1]: %d\n", fds[0], fds[1]);
+  fflush(stdout);
+
+  int f = fork();
+
+  if (f == 0) {
+    close(fds[READ]);
+    fgets(line, sizeof(line), stdin);
+    write(fds[WRITE], line, sizeof(line));
+    close(fds[WRITE]);
+   } else {
+    close(fds[WRITE]);
+    read(fds[READ], line, sizeof(line));
+    printf("parent read %s", line);
+    close(fds[READ]);
+   }
+#+end_src
+
+#+RESULTS:
+
+
+** Named Pipes (FIFO)
+
+*** From the shell
+
+Can be used to communicate between different programs.
+
+#+begin_src sh
+  mkfifo <pipe name>
+#+end_src
+
+
+*** In C
+
+#+begin_src C
+#+end_src
+
+
+Both ends of the pipe block on ~open~.
+* Networking
+
+** OSI 7 Layer Model
+Used to help conceptualize the different parts of network connections.
+
+They are ordered from most concret to most abstract:
+
+*** Physical
+How computers are physically connected
+
+Things like electrons running across wires,
+radio signals pulsing through the air
+
+**** Brief History of Wired Connections
+
+***** Thicknet
+Computers connected via coaxial cables, with vampire taps
+attached whenever a computer wants to connect.
+
+***** Thinnet
+Like Thicknet, but uses a cable splitter.
+
+It still has a signal degradation problem, but it is more modular.
+Can use a repeater with an external power source to boost signal.
+
+***** Token Ring
+In Thicknet and Thinnet, all data is sent to all the computers,
+so each computer added increases the power drain on the entire system.
+
+In the Token ring, every computer is connected in a ring so that each computer
+can use it’s own power source to boost the signal.
+
+Problems:
+- can be slow
+- potential for collissions
+  - handled by giving control of the network to one computer
+    ie. it “has the token”
+
+    This makes it slow because each computer needs to wait for the token.
+    So the token cycles between each computer quickly.
+
+***** Ethernet
+Multiple computers connect to a single hub or switch.
+
+- Hub :: Broadcasts the data to all the computers
+- Switch :: Sends data to a specific computer
+     (Needs to look at [[Data Link]] Layer)
+
+The more computers you add to an ethernet network the greater the chance oc collisions
+because multiple computers can send a signal to the central device at the same time.
+
+Notable, the Ethernet standard was an /open/ standard, as opposed to the Token Ring standard.
+This is the main reason we use it today.
+
+*** Data Link
+Point-to-point tramsission between devices on the same local network
+
+Each device is given a unique 6-byte MAC (Media Access Control) address,
+this is set on each network card when they are made.
+
+**** Ethernet Frams
+Data is packaged into frames
+
+<prefix><dest><source><…><data><checksum>
+8B     6B    6B     6B  46-1500B  4B
+
+prefix: 10101010 7 times and then 10101011;
+
+destination/source: MAC addresses
+
+…: extra info, version etc.
+
+data: 0 padded if it’s less than 46, the MTU (Maximum Transmission Unit is 1500B for ethernet)
+
+checksum: data is hashed into a 4B checksum to ensure integrity
+
+*** Network
+*** Transport
+*** Session
+*** Presentation
+*** Application
+
