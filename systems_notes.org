@@ -10,6 +10,7 @@ Title the note LCT `<MM/DD WEEKDAY>`
 For example: `LCT 9/10 Thursday`
 Also include at the end of the note a link to an interesting piece of tech/science news.
 
+
 * C
 ** Types
 *** Numbers in Java
@@ -52,7 +53,7 @@ if ( 6 == x ) {...}
 #+end_src C
 
 
-*** Characters and Strings 
+*** Characters and Strings
 Character literals are single characters inside ~''~
 #+begin_src C
 char x = 'a';
@@ -84,7 +85,6 @@ for (int i = 0; i < 10; i++) {...}
 int i;
 for (i = 0; i < 10; i++)     {...}
 #+end_src
-
 
 ** Making C Programs
 *** Minimal C Program
@@ -268,7 +268,6 @@ However, array notation results in a new allocation
 char s3[] = "Hello"; // allocates new memory
 assert( s3 != s1 );
 
-
 ** Functions
 
 Functions are declared pretty much like Java.
@@ -426,6 +425,420 @@ If c is not in s, returns null (0)
 Returns a pointer to the start of the first occurance of key in s
 If key is not in s, returns null
 
+** Object Files
+#+begin_src C :tangle stringy.c
+  int my_strlen(char *s) { /* ... */ }
+#+end_src
+
+#+begin_src C :tangle stringy.h
+  int my_strlen(char *s);
+#+end_src
+
+#+begin_src C :tangle main.c
+  #include "stringy.h"
+
+  main() {
+      my_strlen("hey");
+  }
+#+end_src
+
+#+begin_src sh
+  gcc main.c           -o main # error: can't find my_strlen
+  gcc stringy.c main.c -o main # :) as long as stringy.c has no main
+  gcc stringy.c                # error: no main #!@& the linker
+#+end_src
+
+You need to compile them at the same time.
+
+/But/ if your library contains a `main` and your program contains a `main` it will give an error.
+
+/But also/ if you ever want to recompile your lib it won't work because it has no `main`. ¯\\\_(ツ)\_/¯
+
+*** Recompiling Without a ~main~
+
+#+begin_src sh
+  gcc -c systems_notes.orgtringy.c # only compile, creating stringy.o
+#+end_src
+
+The ~.o~ file is a binary file containing the bytecode for the file, but it isn't an executable. Best of all, we don't need a `main`.
+
+We can use it to compile other files
+
+#+begin_src sh
+  gcc main.c stringy.o -o main
+#+end_src
+
+*** Makefiles
+
+#+begin_src makefile :tangle Makefile
+  main: stringy.o mai n.o
+    gcc stringy.o main.o -o main
+
+  stringy.o: stringy.c stringy.h
+    gcc -c stringy.c
+
+  main.o:
+    gcc -c main.c
+#+end_src
+
+
+
+** Dynamic Memory Allocation
+*** ~malloc~
+
+#+begin_src C
+  void * malloc(int x);
+#+end_src
+
+Allocates ~x~ bytes of memory from the heap, returning the address at the beginning of the allocation.
+
+Make sure to typecast the ~void *~ to the type you want.
+
+*** ~calloc~
+
+#+begin_src C
+  void * calloc(int n, int x);
+#+end_src
+
+Like malloc but zeroes it out for ya. Also allocates ~n * x~ bytes. Because Brian Kernigan said so.
+
+*** ~realloc~
+
+#+begin_src C
+  void realloc(void *p, int x);
+#+end_src
+
+Changes the amount of memory allocated to a given block to ~x~ bytes.
+
+~p~ must be a pointer to the beginning of an alllocated block of memory that was ~malloc~ed or ~calloc~ed, but doesn't need to be original pointer.
+
+*** ~free~
+
+#+begin_src C
+  void free(void *p);
+#+end_src
+
+Releases dynamically allocated memory.
+
+Every single call to ~malloc~ / ~calloc~ should have a corresponding call to ~free~.
+
+*** What's wrong with this?
+
+#+begin_src C
+  node * insert_front( node * n, int i ) {
+      node new;
+      new.i = i;
+      new.next = n;
+
+      return &new;
+  }
+#+end_src
+
+The memory is allocated, but is allocated on the stack.
+That means it is popped off at the end of the function, and we can't use it.
+
+**Dynamic allocation is for persisting values across function calls.**
+
+** Other C Language Stuff
+
+*** Typedef
+
+#+begin_src C
+  // typedef <real type> <new name>;
+  typdef float bubbles;
+
+  bubbles b = 12.34;
+  float f = 12.34;
+  assert( f == b );
+#+end_src
+
+*** Structs
+
+#+begin_src C
+  struct { int a; char c;} s;
+  struct { int a; char c;} t; // <= need to rewrite the whole struct type
+
+  typedef struct {int a; char c} myStruct;
+
+  myStruct s;
+  myStruct t; // :)
+
+  s.a = 38;
+  s.c = '*';
+#+end_src
+
+**** Prototyping
+
+#+begin_src C
+  struct foo { int a; char c; } t;
+
+  struct foo s;
+  struct foo t;
+#+end_src
+
+**** Creating structs
+
+#+begin_src C
+  typdef struct { int a; char c; } foo;
+
+  foo *t;
+  t = (foo*)malloc( sizeof(foo) );
+
+  (*t).a = 87;
+  t-> c = 'f';
+#+end_src
+
+*** Prepocessor Instructions
+
+~#~ signals the prepocessor to do stuff
+
+**** ~#define~
+
+Acts as a find and replace
+
+#+begin_src C
+  #define FOO 33
+#+end_src
+
+**** ~#ifndef~
+
+If not defined
+
+#+begin_src C
+  #ifndef FOO
+  #define FOO
+  // ALL THE CODE
+  #endif
+#+end_src
+
+This way everything gets run only once.
+
+**Convention:** make the constant the name of your file, like ~LIST_H~
+
+
+* Files
+** File Descriptor Table
+
+The file descriptor table is a list of the files currently in use.
+It is usually limited to 256. Each file has an index starting at 0,
+which is called the _file descriptor_
+
+#+begin_src C
+  int getdtablesize();
+#+end_src
+
+*** Files in File Descriptor Table by Default
+
+0. ~stdin~
+1. ~stdout~
+2. ~stderr~
+
+** ~open~
+
+Located in ~<fctl.h>~
+Returns the file descriptor if successful.
+Returns ~-1~ and sets ~errno~ if unsuccessful.
+
+#+begin_src C
+  int open(const char* path, int o_flags);
+  int open(const char* path, int o_flags, mode_t mode);
+#+end_src
+
+*** Errors
+In ~errno.h~ there is defined a variable ~int errno~.
+It is common practice to set ~errno~ to an integer signifying
+the cause of an error.
+You can use ~strerror(errno)~ to obtain a string description of the error.
+
+*** Mode
+
+Only used when creating a file.
+Set's the new files permissions using a 3-digit octal number.
+
+In C, octal number literals have a leading 0:
+
+#+begin_src C
+  int x = 0777; // 511 in decimal or  111111111 in binary
+  int y = 777;  // 777 in decimal or 1100001001 in binary
+  int z = 0b111100100 // you can use binary too
+  //        rwxrwxrwx
+#+end_src
+
+*** Open Flags
+
+| name      | desc                                                                         |
+|-----------+------------------------------------------------------------------------------|
+| ~O_RDONLY~ | read only                                                                    |
+| ~O_WRONLY~ | write only                                                                   |
+| ~O_RDWR~  | read and write                                                               |
+| ~O_TRUNC~ | truncate                                                                     |
+| ~O_CREAT~ | create                                                                       |
+| ~O_EXCL~  | exclusive. used in conjunction with create, will fail if file already exists |
+|           |                                                                              |
+
+
+**** Bitwise Operators
+
+| symbol | operation |
+|--------+-----------|
+| ~&~    | and       |
+| ~\vert~    | or        |
+| ~\~~   | not       |
+| ~^~    | xor       |
+
+***** Bitwise not vs not
+
+#+begin_src C
+  int x = 13; // 00001101
+  !x          // 0
+  ~x          // 11110010 => -14
+#+end_src
+
+We can use bitwise or to combine multiple open flags,
+because they are powers of 2
+
+#+begin_src C
+  O_WRONLY = 1        // 00000001
+  O_APPEND = 8        // 00001001
+  O_WRONLY | O_APPEND // 00001001
+#+end_src
+
+** ~close~
+
+Located in ~unistd.h~
+Returns ~0~ if succesful.
+Returns ~-1~ and sets ~errno~ if unsuccessful.
+
+#+begin_src C
+  int close( int file_desc );
+#+end_src
+
+** ~read~
+
+Located in ~unistd.h~
+Reads ~n~ bytes from the file specified by ~file_desc~ into the buffer ~buf~.
+Returns number of bytes read.
+Returns ~-1~ and sets ~errno~ if unsuccessful.
+
+#+begin_src C
+  int read( int file_desc, void *buf, int n );
+#+end_src
+
+** ~write~
+
+Located in ~unistd.h~
+Writes ~n~ bytes from the buffer ~buf~ into the file specified by ~file_desc~.
+Returns number of bytes written.
+Returns ~-1~ and sets ~errno~ if unsuccessful.
+
+#+begin_src C
+  int write( int file_desc, void *buf, int n );
+#+end_src
+
+** Umask
+The file permission mask determines which permissions are not allowed.
+
+You can set it with ~umask~:
+#+begin_src C
+  mode_t umask(mode_t mask);
+#+end_src
+
+The mask is applied using bitwise operators:
+
+#+begin_src C
+  mask = 0022;                // 000 010 010
+  ~mask;                      // 111 101 101
+  mode = 066;                 // 110 110 110
+  actual_mask = ~mask & mode; // 110 100 100 => 544
+#+end_src
+
+** Seek
+C maintains an internal boomark of the current location within
+an open file.
+
+~lseek~ lets you move the bookmark.
+
+#+begin_src C
+  int lseek(int file_desc, int offset, int whence);
+#+end_src
+
+- ~offset~ :: how much to move the bookmark, can be negative
+- ~whence~ :: is from where to measure the offset:
+    - ~SEEK_SET~ means from beginning of file
+    - ~SEEK_CUR~ means from current position
+    - ~SEEK_END~ means from the end of the file
+
+Returns the number of bytes the bookmark is from the beginning of the file or ~-1~ if unsuccessful
+
+** Stat
+*** Metadata
+metadata is data about the data
+  - accessed date
+  - size
+
+You can access it using ~stat~ in ~sys/stat.h~
+
+#+begin_src C
+  stat(char *path,  struct stat *stat_buffer);
+#+end_src
+
+#+begin_src C
+  struct stat stat_buf;
+  stat("foo", &sb);
+#+end_src
+
+*** Stat Buffer
+
+| stat struct field | meaning            |
+|-------------------+--------------------|
+| ~st_size~         | file size in bytes |
+| ~st_uid~          | user id            |
+| ~st_gid~          | group id           |
+| ~st_mode~         | file permissions   |
+| ~st_atime~        | last access        |
+| ~st_mtime~        | last modification  |
+
+**** Time
+
+You can use ~time~ to get the number of seconds since
+some random date.
+
+~ctime~ will format the output of ~time~ to a string.
+
+** Directories
+
+A *nix directory is a file containing the names of the flies within
+the directory along with the basic information like file type
+
+Moving files into/out of a directory means chagning the directory file,
+not actually moving any data.
+
+*** Opening Directories
+
+~opendir~ in ~dirent.h~ allows you to read directories,
+but doesn't change the current working directory.
+
+#+begin_src C
+  DIR * opendir( char *path );
+#+end_src
+
+Close it with ~closedir( DIR* )~, freeing the memory from ~opendir~.
+
+*** Reading Directories
+
+~readdir~ returns a pointer to the next entry in a directory stream,
+or ~0~ if they have all already been returned.
+
+#+begin_src C
+  struct dirent * readdir( DIR* );
+#+end_src
+
+~dirent~ conatins ~d_name~ and ~d_type~.
+
+#+begin_src C
+  void rewinddir( DIR* );
+#+end_src
+
 * Shared Memory
 ** Generating Keys for IPC Functions
 We can use ~ftok~ to generate a randomish key useful for IPC functions:
@@ -468,6 +881,8 @@ Includes last access, size, pid of creator, pid of last modification.
 | ~IPC_STAT~       | populate the buffer with information                             |
 | ~IPC_SET~        | set som of the information for the segment to the info in buffer |
 | ~IPC_RMID~       | remove shared memory segment (~buffer~ can be NULL)              |
+
+
 * Semaphores
 
 - semphore :: IPC construct used to control acces to a shared resource
@@ -550,7 +965,7 @@ If ~union north~ were a struct, it's size would be the sum of the sizes
 of it's fields, ie. 13 bytes.
 Instead, the size of ~union north~ is the largest of the sizes of its fields,
 because it contains only one of its fields at a time.
-  
+
 *** Up(S) / V(S)
 Release the semaphore to signal you are done with it's assosciated resource.
 
@@ -626,6 +1041,7 @@ If the semaphore is 0, wait for it to be available.
    }
 #+end_src
 
+
 * Pipes
 
 - pipe :: a conduit between 2 separate processes
@@ -654,7 +1070,7 @@ the file descriptors of both ends of the pipe
 
 *** Example
 
-#+begin_src C 
+#+begin_src C
   #include <stdio.h>
 
   #define READ 0
@@ -704,6 +1120,8 @@ Can be used to communicate between different programs.
 
 
 Both ends of the pipe block on ~open~.
+
+
 * Networking
 
 ** OSI 7 Layer Model
@@ -785,4 +1203,3 @@ checksum: data is hashed into a 4B checksum to ensure integrity
 *** Session
 *** Presentation
 *** Application
-
