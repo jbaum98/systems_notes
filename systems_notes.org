@@ -839,6 +839,7 @@ or ~0~ if they have all already been returned.
   void rewinddir( DIR* );
 #+end_src
 
+
 * Shared Memory
 ** Generating Keys for IPC Functions
 We can use ~ftok~ to generate a randomish key useful for IPC functions:
@@ -1200,6 +1201,51 @@ checksum: data is hashed into a 4B checksum to ensure integrity
 
 *** Network
 *** Transport
+Computer to computer connection over multiple netwroks.
+
+Unconcerned with individual hops of [[Network][layer 3]] traffic.
+
+**** Ports
+
+To segregate processes from each other, each application has it's own port.
+
+Each IP address has multiple ports: 2^16 = 65,535
+
+Ports < 1024 are reserved, regulated by IANA:
+  - 80 is for HTTP
+  - 22 is for SSH
+
+
+**** TCP
+
+Transmission Control Protocol
+
+It is a /reliable connection/: ensured that both people are listening.
+
+Guarantees delivery of data in the order that it is sent.
+
+***** 3-Way Handshake
+
+Connections are established using a 3-way handshake:
+
+1. Server "binds" to a port and waits
+2. Client sends a ~SYN~ message to the server
+3. Server sends the client a ~SYN_ACK~ message
+4. Client sends an ~ACK~ message to the server
+
+Once this is done the connection is established and
+data can flow freely between the two machines
+
+
+**** UDP
+
+User Datagram Protocol
+
+Takes away all assurances of UDP, not /guaranteed/.
+
+Instead of being sent as a continuous stream,
+data is snet in discrete datagrams with a set size.
+
 *** Session
 *** Presentation
 *** Application
